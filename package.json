@@ -1,26 +1,42 @@
 {
-  "name": "northstone-realty-tmp",
+  "name": "northstone-realty",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . --max-warnings=0",
+    "type-check": "tsc --noEmit",
+    "seed": "tsx src/scripts/seed.ts",
+    "setup-indexes": "tsx src/scripts/setup-indexes.ts",
+    "test:models": "tsx src/scripts/test-models.ts",
+    "test:phase2": "tsx src/scripts/test-models.ts",
+    "test:preview": "tsx src/scripts/test-preview.ts",
+    "test:release": "tsx src/scripts/test-release.ts",
+    "crawl:release": "tsx src/scripts/crawl-release.ts"
   },
   "dependencies": {
+    "bcryptjs": "2.4.3",
+    "cloudinary": "2.10.1",
+    "mongoose": "8.24.4",
     "next": "16.3.2",
+    "next-auth": "4.24.15",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "3.25.76"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/bcryptjs": "2.4.6",
+    "@types/node": "20.19.43",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "dotenv": "16.6.1",
+    "eslint": "9.39.5",
     "eslint-config-next": "16.3.2",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.12",
+    "typescript": "5.9.3"
   }
 }

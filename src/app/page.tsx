@@ -1,69 +1,183 @@
-import Image from "next/image";
+import Image from 'next/image';
+import Link from 'next/link';
+import heroImage from '../../public/images/northstone-hero.webp';
+import { AgentCard } from '@/components/agent-card';
+import { NeighborhoodCard } from '@/components/neighborhood-card';
+import { PropertyCard } from '@/components/property-card';
+import { SiteFooter } from '@/components/site-footer';
+import { SiteHeader } from '@/components/site-header';
+import {
+  getFeaturedPublicProperties,
+  getPublicAgents,
+  getPublicNeighborhoods,
+} from '@/services/public-data.service';
 
-export default function Home() {
+export default async function HomePage() {
+  const [properties, agents, neighborhoods] = await Promise.all([
+    getFeaturedPublicProperties(5),
+    getPublicAgents(),
+    getPublicNeighborhoods(),
+  ]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      <main id="main-content">
+        <section className="hero-shell">
+          <Image
+            src={heroImage}
+            alt="Contemporary stone residence overlooking a landscaped reflecting pool at dusk"
+            fill
+            preload
+            sizes="100vw"
+            className="hero-image"
+          />
+          <div className="hero-wash" />
+          <SiteHeader overlay />
+          <div className="hero-content container-wide">
+            <p className="eyebrow light">Considered property advisory · Mumbai</p>
+            <h1>Exceptional homes,<br />quietly discovered.</h1>
+            <p className="hero-copy">
+              A considered collection of architectural residences, shaped by
+              local knowledge and discreet guidance.
+            </p>
+            <form className="property-search" action="/properties" method="get">
+              <label>
+                <span>Looking to</span>
+                <select name="purpose" defaultValue="BUY" aria-label="Buy or rent">
+                  <option value="BUY">Buy</option>
+                  <option value="RENT">Rent</option>
+                </select>
+              </label>
+              <label>
+                <span>Location</span>
+                <select name="neighborhood" defaultValue="" aria-label="Neighborhood">
+                  <option value="">All neighborhoods</option>
+                  {neighborhoods.map((item) => (
+                    <option key={item.id} value={item.slug}>{item.name}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Property type</span>
+                <select name="propertyType" defaultValue="" aria-label="Property type">
+                  <option value="">All residences</option>
+                  <option value="APARTMENT">Apartment</option>
+                  <option value="PENTHOUSE">Penthouse</option>
+                  <option value="VILLA">Villa</option>
+                  <option value="ESTATE">Estate</option>
+                  <option value="TOWNHOUSE">Townhouse</option>
+                </select>
+              </label>
+              <button type="submit">Search properties <span aria-hidden="true">→</span></button>
+            </form>
+          </div>
+          <p className="hero-index" aria-hidden="true">01 / Mumbai Collection</p>
+        </section>
+
+        <section className="content-section featured-section">
+          <div className="container-wide section-heading">
+            <div><p className="eyebrow">The Northstone collection</p><h2>Homes of distinction</h2></div>
+            <Link href="/properties">View all properties <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className="container-wide property-grid">
+            {properties.map((property, index) => (
+              <PropertyCard key={property.id} property={property} priority={index < 2} />
+            ))}
+          </div>
+        </section>
+
+        <section className="content-section type-section">
+          <div className="container">
+            <p className="eyebrow">Explore by architecture</p>
+            <h2>Find your kind of home.</h2>
+            <div className="type-links">
+              {[
+                ['APARTMENT', 'Apartments', 'City homes, precisely considered.'],
+                ['PENTHOUSE', 'Penthouses', 'Elevated residences with rare outlooks.'],
+                ['VILLA', 'Villas', 'Private houses shaped by light and landscape.'],
+                ['ESTATE', 'Estates', 'Exceptional scale, gardens, and discretion.'],
+              ].map(([type, label, copy], index) => (
+                <Link key={type} href={'/properties?propertyType=' + type}>
+                  <span>0{index + 1}</span><h3>{label}</h3><p>{copy}</p><strong aria-hidden="true">↗</strong>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="content-section neighborhoods-section">
+          <div className="container-wide section-heading">
+            <div><p className="eyebrow">Local perspective</p><h2>Neighborhoods, understood.</h2></div>
+            <Link href="/neighborhoods">Explore all <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className="container-wide neighborhood-grid">
+            {neighborhoods.map((neighborhood) => (
+              <NeighborhoodCard key={neighborhood.id} neighborhood={neighborhood} />
+            ))}
+          </div>
+        </section>
+
+        <section className="content-section advisors-section">
+          <div className="container-wide section-heading">
+            <div><p className="eyebrow">Personal guidance</p><h2>Advisors who listen first.</h2></div>
+            <Link href="/agents">Meet the team <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className="container-wide agent-grid">
+            {agents.map((agent) => <AgentCard key={agent.id} agent={agent} />)}
+          </div>
+        </section>
+
+        <section className="process-section">
+          <div className="container process-grid">
+            <div><p className="eyebrow light">A simpler search</p><h2>Considered from brief to keys.</h2></div>
+            <ol>
+              <li><span>01</span><div><h3>Tell us what matters</h3><p>Share the life you want to make room for—not just a checklist.</p></div></li>
+              <li><span>02</span><div><h3>Review a focused edit</h3><p>We narrow the market to a small collection worth your time.</p></div></li>
+              <li><span>03</span><div><h3>Visit with context</h3><p>See each home with clear advice on place, value, and fit.</p></div></li>
+            </ol>
+          </div>
+        </section>
+
+        <section className="platform-section">
+          <div className="container-wide platform-heading">
+            <div>
+              <p className="eyebrow">Explore the platform</p>
+              <h2>See the complete property journey.</h2>
+            </div>
+            <p>
+              Move from public discovery to a refined customer experience and
+              the operational tools behind it. Preview changes remain on this device.
+            </p>
+          </div>
+          <nav className="container-wide platform-links" aria-label="Platform quick links">
+            <Link href="/properties">
+              <span>01</span>
+              <div><p>Public Website</p><h3>Browse Properties</h3><small>Discover the NORTHSTONE collection.</small></div>
+              <strong aria-hidden="true">↗</strong>
+            </Link>
+            <Link href="/portal">
+              <span>02</span>
+              <div><p>For customers</p><h3>Customer Portal</h3><small>Save homes, manage enquiries, and schedule visits.</small></div>
+              <strong aria-hidden="true">↗</strong>
+            </Link>
+            <Link href="/operations">
+              <span>03</span>
+              <div><p>For teams</p><h3>Operations Console</h3><small>Explore inventory, leads, agents, and appointments.</small></div>
+              <strong aria-hidden="true">↗</strong>
+            </Link>
+          </nav>
+        </section>
+
+        <section className="enquiry-cta">
+          <div className="container">
+            <p className="eyebrow">Begin a conversation</p>
+            <h2>Your next home may not begin with a search box.</h2>
+            <p>Tell us what you are looking for. We will return with a considered point of view.</p>
+            <Link href="/contact" className="button-primary">Speak with an advisor</Link>
+          </div>
+        </section>
       </main>
-    </div>
+      <SiteFooter />
+    </>
   );
 }
