@@ -16,6 +16,7 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
         <Link href="/neighborhoods">Neighborhoods</Link>
         <Link href="/agents">Advisors</Link>
         <Link href="/about">About</Link>
+        <Link href="/operations">Admin Panel</Link>
       </nav>
       <Link href="/contact" className="header-cta">
         Enquire <span aria-hidden="true">↗</span>
@@ -28,6 +29,7 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
           <Link href="/neighborhoods">Neighborhoods</Link>
           <Link href="/agents">Advisors</Link>
           <Link href="/about">About</Link>
+          <Link href="/operations">Admin Panel</Link>
           <Link href="/contact">Contact</Link>
         </nav>
       </details>

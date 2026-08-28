@@ -152,12 +152,14 @@ test('preview runtime and public demo sources have no database or server-action 
 test('quick links expose the public site, Customer Portal, and Operations Console', () => {
   const quickLinkSources = [
     source('src/app/page.tsx'),
+    source('src/components/site-header.tsx'),
     source('src/components/site-footer.tsx'),
     source('src/components/preview-shell.tsx'),
   ].join('\n');
   assert.match(quickLinkSources, /href="\/properties"/);
   assert.match(quickLinkSources, /href="\/portal"/);
   assert.match(quickLinkSources, /href="\/operations"/);
+  assert.match(source('src/components/site-header.tsx'), />Admin Panel<\/Link>/);
 });
 
 test('sitemap contains every public detail route and excludes preview routes', () => {
