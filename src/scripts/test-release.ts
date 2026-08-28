@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createPreviewSeed } from '@/lib/preview-data';
+import { getSiteUrl } from '@/lib/site-url';
 import robots from '@/app/robots';
 import sitemap from '@/app/sitemap';
 import {
@@ -28,6 +29,34 @@ function source(relativePath: string) {
 }
 
 const preview = createPreviewSeed();
+
+test('site URL ignores blank or malformed deployment values', () => {
+  const keys = [
+    'NEXT_PUBLIC_SITE_URL',
+    'VERCEL_PROJECT_PRODUCTION_URL',
+    'VERCEL_URL',
+  ] as const;
+  const original = new Map(keys.map((key) => [key, process.env[key]]));
+
+  try {
+    process.env.NEXT_PUBLIC_SITE_URL = '   ';
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = 'not a valid URL';
+    process.env.VERCEL_URL = 'northstone-release.vercel.app';
+    assert.equal(
+      getSiteUrl().toString(),
+      'https://northstone-release.vercel.app/'
+    );
+
+    process.env.VERCEL_URL = '';
+    assert.equal(getSiteUrl().toString(), 'http://localhost:3000/');
+  } finally {
+    for (const key of keys) {
+      const value = original.get(key);
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
+});
 
 test('preview property prices, statuses, purposes, and details match the release seed', () => {
   assert.equal(preview.properties.length, seedProperties.length);
